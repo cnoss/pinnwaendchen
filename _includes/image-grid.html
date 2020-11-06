@@ -9,7 +9,7 @@
         {% if image.path contains slug %}
           <li class="image-overview__item">
             <figure class="image-holder">
-              <img class="image-holder__item" src="{{ image.path }}">
+              <img class="image-holder__item" src="{{site.baseurl}}/{{ image.path }}">
             </figure>
           </li>
         {% endif %}

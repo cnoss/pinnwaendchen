@@ -1,6 +1,6 @@
 site: Index Jekyll Theme
 
-baseurl: "/mi-pinnwand"
+baseurl: "/pinnwand"
 
 defaults:
   -
