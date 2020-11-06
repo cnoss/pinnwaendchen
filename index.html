@@ -1,0 +1,16 @@
+--- 
+layout: default 
+title: Blog 
+---
+
+<header class="page-header">
+  <h1>{{site.data.settings.basic_settings.site_title}}</h1>
+</header>
+
+<ul class="toc">
+  {% for page in site.pages %}
+    <li class="toc__item">
+      <a href="{{ page.url }}">{{ page.title }}</a>
+    </li>
+  {% endfor %}
+</ul>

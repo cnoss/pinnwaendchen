@@ -1,0 +1,19 @@
+{% assign folder = include.folder %}
+{% assign slug = include.slug %}
+
+<ul class="image-overview">
+  {% for image in site.static_files %}
+
+    {% if image.path contains 'assets/images/pool' %}
+      {% if image.path contains folder %}
+        {% if image.path contains slug %}
+          <li class="image-overview__item">
+            <figure class="image-holder">
+              <img class="image-holder__item" src="{{ image.path }}">
+            </figure>
+          </li>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</ul>

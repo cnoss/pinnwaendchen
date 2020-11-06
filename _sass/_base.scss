@@ -1,0 +1,97 @@
+*{
+  box-sizing: border-box;
+}
+
+html, body{
+  font-family: $font-family-sans;
+  font-size: $base-font-size;
+  line-height: $lh-default;
+  font-weight: $fw-light; 
+  hyphens: auto;
+  color:$text-color;
+  scroll-behavior: smooth;
+  padding: $m;
+}
+
+body{
+  background-color:$mi-hellgrau;
+}
+
+blockquote{
+  font-family: $font-family-serif;
+  color: $headline-color;
+
+  &:before{
+    content: "«";
+    padding-right: 0.1em;
+  }
+
+  &:after{
+    content: "»";
+    padding-left: 0.1em;
+  }
+}
+
+
+h1, h2, h3, h4{
+  line-height: $lh-tight;
+  font-weight: $fw-bold;
+  color: $headline-color;
+  hyphens: none;
+}
+
+h2, h3{
+  font-weight: $fw-medium;
+}
+
+h1, h2, h3, h4, p, blockquote{
+  margin-bottom: $m;
+}
+
+h1{
+  font-size: $xl;
+}
+
+h2{
+  font-size: $l;
+}
+
+h3{
+  font-size: $m;
+}
+
+p{
+  margin-bottom: $xs;
+}
+
+p + h2{
+  margin-top: $l;
+}
+
+p + h3{
+  margin-top: $l;
+}
+
+img{
+  width: 100%;
+}
+
+a{
+  color: $interaction-color;
+}
+
+ul.list{
+  li{
+    display: block;
+    margin-bottom: $s;
+    margin-left: $m;
+
+    &::before{
+      content:"-";
+      margin-left: -$m;
+      padding-right: $s;
+      color: $decoration-color;
+      font-weight: $fw-bold;
+    }
+  }
+}
