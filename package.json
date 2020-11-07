@@ -1,0 +1,24 @@
+{
+  "name": "pinnwaendchen",
+  "version": "1.0.0",
+  "description": "Kleines Tool zum Zeigen von visuellen Arbeitsergebnissen",
+  "main": "index.js",
+  "scripts": {
+    "get-images": "node tools/get-images.js",
+    "get-images-raw": "node tools/get-images.js raw",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cnoss/pinnwaendchen.git"
+  },
+  "author": "Christian Noss",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cnoss/pinnwaendchen/issues"
+  },
+  "homepage": "https://github.com/cnoss/pinnwaendchen#readme",
+  "dependencies": {
+    "jimp": "^0.16.1"
+  }
+}
