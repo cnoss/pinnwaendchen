@@ -6,7 +6,8 @@ const imageZoom = document.querySelector("#image-zoom");
 const holderItems = document.querySelectorAll(".image-holder__item");
 const imageMenue = document.querySelector("#image-menue");
 const menuOptions = imageMenue.querySelectorAll(".image-options__item");
-
+const slider = document.getElementById('grid-size');
+const root = document.documentElement;
 
 /*##########################################################################
 Classes
@@ -21,12 +22,23 @@ class handleInteractions {
     this.holderItems = holderItems;
     this.options = options;
     this.states = states;
+    this.slider = slider;
     this.marked = false;
     this.menuOptions = menuOptions;
     this.setClickEvents();
     this.setKeyboardEvents();
     this.setMenuOptions();
+    this.setSliderEvents();
   }
+
+  setSliderEvents() { 
+    console.log(this.slider);
+    let slider = this.slider;
+    this.slider.addEventListener('change', function () {
+      root.style.setProperty('--grid-size', slider.value + "rem");
+    });
+  }
+
 
   setMenuOptions() { 
     this.menuOptions.forEach(item => {
@@ -34,6 +46,7 @@ class handleInteractions {
         let state = item.id;
         if (state === "is-large") {
           this.zoomImage(this.marked);
+          this.options.toggleOption(state);
         } else { 
           this.marked.classList.toggle(state);
           this.states.toogleState(this.marked, state);

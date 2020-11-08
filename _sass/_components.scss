@@ -4,7 +4,7 @@
   margin: 0;
   
 
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--grid-size), 1fr));
   grid-auto-rows: 1fr;
   grid-column-gap: .75rem;
   grid-row-gap: .75rem;
@@ -136,7 +136,7 @@
 
   &.is-active{
     opacity: 1;
-    z-index: 100;
+    z-index: 50;
 
     img{
       transform: scale(1);
@@ -160,6 +160,7 @@
   position: fixed;
   right: -50%;
   top: 50vh;
+  transform: translateY(-50%);
   z-index: 200;
   transition: all $tr-fast;
   padding: $s;
@@ -185,5 +186,114 @@
         margin-bottom: 0;
       }
     }
+  }
+}
+
+
+/* Grid Menu
+---------------------------------------------------------------------------- */
+#grid-menue{
+  position: fixed;
+  bottom: 0;
+  left: 50vw;
+  display: flex;
+  justify-content: center;
+  padding: $s;
+  z-index: 755;
+  width: 400px;
+  transform: translateX(-200px);
+}
+
+
+/* Slider (from http://danielstern.ca/range.css/#/)
+---------------------------------------------------------------------------- */
+input[type=range] {
+  width: 100%;
+  margin: -0.5px 0;
+  background-color: transparent;
+  -webkit-appearance: none;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  background: rgba(0, 0, 0, 0.2);
+  border: 0.2px solid rgba(1, 1, 1, 0);
+  border-radius: 1.3px;
+  width: 100%;
+  height: 25px;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  margin-top: 0.3px;
+  width: 24px;
+  height: 24px;
+  background: #ff1166;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #808080;
+}
+input[type=range]::-moz-range-track {
+  background: rgba(0, 0, 0, 0.2);
+  border: 0.2px solid rgba(1, 1, 1, 0);
+  border-radius: 1.3px;
+  width: 100%;
+  height: 25px;
+  cursor: pointer;
+}
+input[type=range]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: #ff1166;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  background: transparent;
+  border-color: transparent;
+  border-width: 0.5px 0;
+  color: transparent;
+  width: 100%;
+  height: 25px;
+  cursor: pointer;
+}
+input[type=range]::-ms-fill-lower {
+  background: #000000;
+  border: 0.2px solid rgba(1, 1, 1, 0);
+  border-radius: 2.6px;
+}
+input[type=range]::-ms-fill-upper {
+  background: rgba(0, 0, 0, 0.2);
+  border: 0.2px solid rgba(1, 1, 1, 0);
+  border-radius: 2.6px;
+}
+input[type=range]::-ms-thumb {
+  width: 24px;
+  height: 24px;
+  background: #ff1166;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  cursor: pointer;
+  margin-top: 0px;
+  /*Needed to keep the Edge thumb centred*/
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: rgba(0, 0, 0, 0.2);
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: #808080;
+}
+/*TODO: Use one of the selectors from https://stackoverflow.com/a/20541859/7077589 and figure out
+how to remove the virtical space around the range input in IE*/
+@supports (-ms-ime-align:auto) {
+  /* Pre-Chromium Edge only styles, selector taken from hhttps://stackoverflow.com/a/32202953/7077589 */
+  input[type=range] {
+    margin: 0;
+    /*Edge starts the margin from the thumb, not the track as other browsers do*/
   }
 }
