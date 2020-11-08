@@ -110,7 +110,7 @@
 .image-zoom{
 
   z-index: -1;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
@@ -150,4 +150,40 @@
 
   }
   
+}
+
+
+/* Image Menu
+---------------------------------------------------------------------------- */
+
+#image-menue{
+  position: fixed;
+  right: -50%;
+  top: 50vh;
+  z-index: 200;
+  transition: all $tr-fast;
+  padding: $s;
+
+  &.is-active{
+    right: 0;
+  }
+  .image-options{
+    &__item{
+      margin-bottom: $s;
+      color: $mi-pink;
+      text-shadow: $text-shadow;
+      
+      &.is-active{
+        color: $mi-gruen;
+      }
+
+      &:hover{
+        cursor: pointer;
+      }
+
+      &:last-child{
+        margin-bottom: 0;
+      }
+    }
+  }
 }

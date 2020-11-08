@@ -2,14 +2,158 @@
 Config
 ############################################################################ */
 
-let marked = false;
 const imageZoom = document.querySelector("#image-zoom");
 const holderItems = document.querySelectorAll(".image-holder__item");
+const imageMenue = document.querySelector("#image-menue");
+const menuOptions = imageMenue.querySelectorAll(".image-options__item");
+
 
 /*##########################################################################
 Classes
 ############################################################################ */
 
+/* Handle Interactions
+---------------------------------------------------------------------------- */
+
+class handleInteractions { 
+
+  constructor(holderItems, options, states ) { 
+    this.holderItems = holderItems;
+    this.options = options;
+    this.states = states;
+    this.marked = false;
+    this.menuOptions = menuOptions;
+    this.setClickEvents();
+    this.setKeyboardEvents();
+    this.setMenuOptions();
+  }
+
+  setMenuOptions() { 
+    this.menuOptions.forEach(item => {
+      item.addEventListener('click', (event) => {
+        let state = item.id;
+        if (state === "is-large") {
+          this.zoomImage(this.marked);
+        } else { 
+          this.marked.classList.toggle(state);
+          this.states.toogleState(this.marked, state);
+          this.options.toggleOption(state);
+        }
+      });
+    });
+  }
+  
+  setClickEvents() { 
+    this.holderItems.forEach(item => {
+      item.addEventListener('click', (event) => {
+        let item = event.target;
+        this.handleMarking(item);
+      });
+    });
+  }
+
+  handleMarking(element) { 
+    if (!this.marked) { 
+      element.classList.add("is-marked");
+      this.marked = element;
+      this.options.showMenue(element);
+    }
+    else if (this.marked && this.marked === element) { 
+      this.marked.classList.remove("is-marked");
+      this.marked = false;
+      this.options.hideMenue();
+    }
+    else{
+      this.marked.classList.remove("is-marked");
+      element.classList.add("is-marked");
+      this.marked = element;
+      this.options.showMenue(element);
+    }
+  }
+
+  zoomImage(obj) {
+    imageZoom.querySelector("img").src = obj.src;
+    imageZoom.classList.toggle("is-active");
+    imageZoom.querySelector("figcaption").innerText = obj.alt;
+  }
+
+  setKeyboardEvents() { 
+    document.addEventListener('keydown', e => { 
+      if (!this.marked) {
+        return false;
+      }
+      switch (e.code) {
+        case "KeyS":
+          this.marked.classList.toggle("is-fav");
+          this.states.toogleState(this.marked, "is-fav");
+          this.options.toggleOption("is-fav");
+          break;
+  
+        case "Space":
+          this.zoomImage(this.marked);
+          this.options.toggleOption("is-large");
+          break;
+  
+        case "KeyD":
+          this.marked.classList.toggle("is-bad");
+          this.states.toogleState(this.marked, "is-bad");
+          this.options.toggleOption("is-bad");
+          break;
+  
+        case "KeyF":
+          if (this.marked.requestFullscreen) {
+            this.marked.requestFullscreen();
+          }
+          break;
+        default:
+          return false;
+      }
+    });
+  }
+}
+
+/* Image Options
+---------------------------------------------------------------------------- */
+
+class imageOptions { 
+
+  constructor(states) { 
+    this.target = imageMenue;
+    this.states = states;
+    this.menuOptions = menuOptions;
+  }
+
+  resetOptions() {
+    this.menuOptions.forEach(option => {
+      option.classList.remove("is-active");
+    });
+  }
+
+  assignOptions(key) { 
+    let activeStates = this.states.getStates(key);
+    this.resetOptions();
+    if (activeStates) { 
+      activeStates.forEach(state => { 
+        this.toggleOption(state);
+      });
+    }
+  }
+
+  showMenue(element) { 
+    this.target.classList.add("is-active");
+    let key = element.id;
+    this.assignOptions(key);
+  }
+
+  hideMenue() { 
+    this.target.classList.remove("is-active");
+  }
+
+  toggleOption(option) { 
+    let target = document.getElementById(option);
+    target.classList.toggle("is-active");
+  }
+}
 
 
 /* Store States
@@ -17,6 +161,7 @@ Classes
 
 class storeHandler{
   constructor(elements) {
+    
     elements.forEach(element => { 
       let states = this.getStates(element.id);
       let target = document.getElementById(element.id);
@@ -41,7 +186,7 @@ class storeHandler{
   }
 
   toogleState(element, newState) { 
-    if (storageAvailable('localStorage')) {
+    if (this.storageAvailable('localStorage')) {
       let id = element.id;
       let states = this.getStates(id);
       states = (Array.isArray(states)) ? states : [];
@@ -54,52 +199,34 @@ class storeHandler{
       this.storeStates(id, states);
     }
   }
-}
-
-
-
-/*##########################################################################
-Functions
-############################################################################ */
-
-/* Zoom Images
----------------------------------------------------------------------------- */
-
-function zoomImage(obj) {
-  imageZoom.querySelector("img").src = obj.src;
-  imageZoom.classList.toggle("is-active");
-
-  imageZoom.querySelector("figcaption").innerText = obj.alt;
-}
-
-
-/* Check Local Storage
----------------------------------------------------------------------------- */
-
-function storageAvailable(type) {
-  var storage;
-  try {
-      storage = window[type];
-      var x = '__storage_test__';
-      storage.setItem(x, x);
-      storage.removeItem(x);
-      return true;
+  
+  storageAvailable(type) {
+    var storage;
+    try {
+        storage = window[type];
+        var x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch(e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            (storage && storage.length !== 0);
+    }
   }
-  catch(e) {
-      return e instanceof DOMException && (
-          // everything except Firefox
-          e.code === 22 ||
-          // Firefox
-          e.code === 1014 ||
-          // test name field too, because code might not be present
-          // everything except Firefox
-          e.name === 'QuotaExceededError' ||
-          // Firefox
-          e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-          // acknowledge QuotaExceededError only if there's something already stored
-          (storage && storage.length !== 0);
-  }
+
 }
+
 
 /*##########################################################################
 Main
@@ -109,57 +236,17 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
   /* Storage
   -------------------------------------------------------------------------- */
-  
-  let states = new storeHandler(holderItems);
+  const states = new storeHandler(holderItems);
 
 
-  /* Click Events
+  /* Image Options
   -------------------------------------------------------------------------- */
-
-  holderItems.forEach(item => {
-    item.addEventListener('click', (event) => {
-      let item = event.target;
-      if (marked && marked != item) {
-        marked.classList.remove("is-marked");
-      }
-      item.classList.toggle("is-marked");
-      marked = item;
-    });
-  });
+  const options = new imageOptions(states);
 
 
-  /* Keyboard Events
-  -------------------------------------------------------------------------- */
-
-  document.addEventListener('keydown', logKey);
-  function logKey(e) {
-    if (!marked) {
-      return false;
-    }
-    switch (e.code) {
-      case "KeyS":
-        marked.classList.toggle("is-fav");
-        states.toogleState(marked, "is-fav");
-        break;
-
-      case "Space":
-        zoomImage(marked);
-        break;
-
-      case "KeyD":
-        marked.classList.toggle("is-bad");
-        states.toogleState(marked, "is-bad");
-        break;
-
-      case "KeyF":
-        if (marked.requestFullscreen) {
-          marked.requestFullscreen();
-        }
-        break;
-      default:
-        return false;
-    }
-  }
+  /* Interactions
+  -------------------------------------------------------------------------- */  
+  const interactions = new handleInteractions(holderItems, options, states);
 
 });
 
