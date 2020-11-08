@@ -32,13 +32,17 @@ class handleInteractions {
   }
 
   setSliderEvents() { 
-    console.log(this.slider);
     let slider = this.slider;
     this.slider.addEventListener('change', function () {
       root.style.setProperty('--grid-size', slider.value + "rem");
     });
   }
 
+  openInNewTab() {
+    let url = this.marked.src;
+    let win = window.open(url, '_blank');
+    win.focus();
+  }
 
   setMenuOptions() { 
     this.menuOptions.forEach(item => {
@@ -47,6 +51,8 @@ class handleInteractions {
         if (state === "is-large") {
           this.zoomImage(this.marked);
           this.options.toggleOption(state);
+        } else if(state === "open"){ 
+          this.openInNewTab();
         } else { 
           this.marked.classList.toggle(state);
           this.states.toogleState(this.marked, state);
