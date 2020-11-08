@@ -3,13 +3,13 @@
 
 <ul class="image-overview">
   {% for image in site.static_files %}
-
     {% if image.path contains 'assets/images/pool' %}
       {% if image.path contains folder %}
         {% if image.path contains slug %}
           <li class="image-overview__item">
+          {% assign alt = image.name %}
             <figure class="image-holder">
-              <img class="image-holder__item" src="{{site.baseurl}}/{{ image.path }}">
+              <img id="{{ image.path | slugify }}" loading=lazy class="image-holder__item" src="{{site.baseurl}}/{{ image.path }}" alt="{{ alt }}">
             </figure>
           </li>
         {% endif %}

@@ -93,13 +93,61 @@
 ---------------------------------------------------------------------------- */
 
 .image-wrap{
-
+  z-index: 1;
   padding-bottom: $xl;
   border-bottom: solid $border-color $border-width;
   margin-bottom: $xl;
 
   h2{
     margin-bottom: $xl;
+  }
+  
+}
+
+/* Image Zoom
+---------------------------------------------------------------------------- */
+
+.image-zoom{
+
+  z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+  transition: all $tr-fast;
+  background-color: $mi-hellgrau;
+
+  img{
+    transform: scale(0.1);
+    object-fit: contain;
+    transition: all $tr-fast;
+  }
+
+  figcaption{
+    position: absolute;
+    left: $m;
+    bottom: 0;
+    padding: $xs $s;
+    background-color: #fff;
+    transition: all $tr-medium;
+  }
+
+  &.is-active{
+    opacity: 1;
+    z-index: 100;
+
+    img{
+      transform: scale(1);
+      width: 100%;
+      height: 100%;
+    }
+
+    figcaption{
+      bottom: $m;
+    }
+
   }
   
 }
