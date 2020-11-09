@@ -1,7 +1,7 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const Jimp = require('jimp');
-
+const fs = require('fs');
 
 /** Config
  --------------------------------------------------------------------------- */
@@ -34,14 +34,6 @@ config.mode = "";
 
 async function copyImages(source, target) {
   let cmd = `rsync -av ${source}/ ${target}/`;
-  let ret = await exec(cmd, (error, stdout, stderr) => {
-    return (stdout ? stdout : stderr);
-  });
-  return ret.stdout;
-}
-
-async function copyImages(source, target) {
-  let cmd = `rsync -av ${source}/ ${target}/`;
   let { stdout, stderr } = await exec(cmd);
   if (stderr) {
     console.error(`error: ${stderr}`);
@@ -53,18 +45,24 @@ async function convert(images, width, quality) {
   await Promise.all(
     images.map(async (imgPath) => {
       const image = await Jimp.read(imgPath);
+      const newImgPath = (imgPath.match(/jpg$/)) ? imgPath : imgPath.replace(/(.*)\..*/, "$1.jpg");
       await image.resize(width, Jimp.AUTO);
       await image.brightness(config.output.brightness);
       await image.contrast(config.output.contrast);
-
       await image.quality(quality);
-      await image.writeAsync(imgPath);
+      await image.writeAsync(newImgPath);
+      console.log(newImgPath);
+      if (!imgPath.match(/jpg$/)) { 
+       fs.unlinkSync(imgPath);
+      }
     })
   );
 };
 
-async function scaleImages(path) {
-  let cmd = `find ${path} -type f`;
+async function scaleImages(path, lastMod) {
+  let mmin = (lastMod) ? "-mmin -" + lastMod : "";
+  let cmd = `find ${path} -type f ${mmin}`;
+
   let { stdout, stderr } = await exec(cmd);
   let files = stdout.split(/\n/);
   let pattern = new RegExp(config.suffixes.join("$|") + "$", 'i');
@@ -72,7 +70,12 @@ async function scaleImages(path) {
   let images = [];
   files.forEach(file => {
     if (file.match(pattern)) {
-      images.push(file);
+      let stats = fs.statSync(file);
+      let filesize = stats["size"];
+      if (filesize > 524288) { // 0.5 MByte
+        images.push(file);
+      }
+      
     }
   });
 
@@ -94,7 +97,11 @@ sources.forEach((src) => {
       console.log("Dateien kopiert :)");
     }).then(
       () => {
-        if (config.mode !== "raw") { 
+        if (config.mode === "latest") { 
+          scaleImages(config.paths.target);
+          console.log("Neueste Bilder skalieren …");
+        }
+        else if (config.mode !== "raw") { 
           scaleImages(config.paths.target);
           console.log("Bilder skalieren …");
         }

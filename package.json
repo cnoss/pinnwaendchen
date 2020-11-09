@@ -6,6 +6,7 @@
   "scripts": {
     "get-images": "node tools/get-images.js",
     "get-images-raw": "node tools/get-images.js raw",
+    "get-latest-images": "node tools/get-images.js latest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
