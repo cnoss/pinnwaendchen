@@ -18,6 +18,23 @@
   position: relative;
   height: 0;
   padding-top: 100%;
+  transition: all $tr-fast;
+
+  &.is-marked{
+    border: solid $interaction-color $border-width;
+  }
+
+  &.is-bad{
+    opacity: 0.3;
+    transform: scale(0.5);
+  }
+
+  &.is-fav{
+    transform: rotate(3deg);
+    box-shadow: $text-shadow;
+    background: #fff;
+    z-index: 10;
+  }
 
   &__item {
     position: absolute;
@@ -27,32 +44,20 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    object-position: top center;
+    object-position: center center;
     z-index: 1;
     transition: all $tr-fast;
 
-    &.is-large{
-      transform: scale(3);
-      z-index: 10;
-      box-shadow: $text-shadow;
-      background: #fff;
-      object-position: top left;
+    &[data-rotation="90"]{
+      transform: rotate(90deg);
     }
 
-    &.is-bad{
-      opacity: 0.3;
-      transform: scale(0.5);
+    &[data-rotation="180"]{
+      transform: rotate(180deg);
     }
 
-    &.is-marked{
-      border: solid $interaction-color $border-width;
-    }
-
-    &.is-fav{
-      transform: rotate(3deg);
-      box-shadow: $text-shadow;
-      background: #fff;
-      z-index: 10;
+    &[data-rotation="270"]{
+      transform: rotate(270deg);
     }
   }
 }
@@ -142,6 +147,18 @@
       transform: scale(1);
       width: 100%;
       height: 100%;
+
+      &[data-rotation="90"]{
+        transform: rotate(90deg) scale(1);
+      }
+  
+      &[data-rotation="180"]{
+        transform: rotate(180deg) scale(1);
+      }
+  
+      &[data-rotation="270"]{
+        transform: rotate(270deg) scale(1);
+      }
     }
 
     figcaption{
@@ -159,11 +176,14 @@
 #image-menue{
   position: fixed;
   right: -50%;
-  top: 50vh;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
+  background-color: $lighten;
   z-index: 200;
   transition: all $tr-fast;
   padding: $s;
+  display: flex;
+  align-items: center;
 
   &.is-active{
     right: 0;

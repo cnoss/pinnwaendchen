@@ -2,11 +2,11 @@
 Config
 ############################################################################ */
 
-const imageZoom = document.querySelector("#image-zoom");
-const holderItems = document.querySelectorAll(".image-holder__item");
-const imageMenue = document.querySelector("#image-menue");
-const menuOptions = imageMenue.querySelectorAll(".image-options__item");
-const slider = document.getElementById('grid-size');
+const imageZoom = (document.querySelector("#image-zoom")) ? document.querySelector("#image-zoom") : false;
+const holderItems = (document.querySelectorAll(".image-holder__item")) ? document.querySelectorAll(".image-holder__item") : false;
+const imageMenue = (document.querySelector("#image-menue")) ? document.querySelector("#image-menue") : false;
+const menuOptions = (imageMenue) ? imageMenue.querySelectorAll(".image-options__item") : false;
+const slider = (document.getElementById('grid-size')) ? document.getElementById('grid-size') : false;
 const root = document.documentElement;
 
 /*##########################################################################
@@ -16,9 +16,9 @@ Classes
 /* Handle Interactions
 ---------------------------------------------------------------------------- */
 
-class handleInteractions { 
+class handleInteractions {
 
-  constructor(holderItems, options, states ) { 
+  constructor(holderItems, options, states) {
     this.holderItems = holderItems;
     this.options = options;
     this.states = states;
@@ -29,31 +29,76 @@ class handleInteractions {
     this.setKeyboardEvents();
     this.setMenuOptions();
     this.setSliderEvents();
+    this.setGridSize();
+    this.setRotations();
   }
 
-  setSliderEvents() { 
-    let slider = this.slider;
+  setGridSize() {
+    let gridSize = this.states.getStates("grid-size");
+    root.style.setProperty('--grid-size', gridSize + "rem");
+  }
+
+  setSliderEvents() {
+    let $slider = this.slider;
+    let $states = this.states;
     this.slider.addEventListener('change', function () {
-      root.style.setProperty('--grid-size', slider.value + "rem");
+      root.style.setProperty('--grid-size', $slider.value + "rem");
+      $states.storeStates("grid-size", $slider.value);
     });
   }
 
   openInNewTab() {
-    let url = this.marked.src;
+    let url = this.marked.querySelector("img").src;
     let win = window.open(url, '_blank');
     win.focus();
   }
 
-  setMenuOptions() { 
+  setRotations() {
+    let $states = this.states;
+    this.holderItems.forEach(item => {
+      let rotation = $states.getStates(item.id);
+      if (rotation) {
+        item.setAttribute('data-rotation', rotation);
+      }
+    });
+  }
+
+  setRotation() {
+    let element = this.marked.querySelector("img")
+    let dataset = element.dataset.rotation;
+
+    if (dataset === "90") {
+      element.setAttribute('data-rotation', '180');
+
+    } else if (dataset === "180") {
+      element.setAttribute('data-rotation', '270');
+
+    } else if (dataset === "270") {
+      element.setAttribute('data-rotation', '0');
+
+    } else {
+      element.setAttribute('data-rotation', '90');
+    }
+
+    this.states.storeStates(element.id, dataset);
+  }
+
+  setMenuOptions() {
     this.menuOptions.forEach(item => {
       item.addEventListener('click', (event) => {
         let state = item.id;
+
         if (state === "is-large") {
           this.zoomImage(this.marked);
           this.options.toggleOption(state);
-        } else if(state === "open"){ 
+
+        } else if (state === "rotate") {
+          this.setRotation();
+
+        } else if (state === "open") {
           this.openInNewTab();
-        } else { 
+
+        } else {
           this.marked.classList.toggle(state);
           this.states.toogleState(this.marked, state);
           this.options.toggleOption(state);
@@ -61,8 +106,8 @@ class handleInteractions {
       });
     });
   }
-  
-  setClickEvents() { 
+
+  setClickEvents() {
     this.holderItems.forEach(item => {
       item.addEventListener('click', (event) => {
         let item = event.target;
@@ -71,18 +116,19 @@ class handleInteractions {
     });
   }
 
-  handleMarking(element) { 
-    if (!this.marked) { 
+  handleMarking(element) {
+    element = element.parentNode;
+    if (!this.marked) {
       element.classList.add("is-marked");
       this.marked = element;
       this.options.showMenue(element);
     }
-    else if (this.marked && this.marked === element) { 
+    else if (this.marked && this.marked === element) {
       this.marked.classList.remove("is-marked");
       this.marked = false;
       this.options.hideMenue();
     }
-    else{
+    else {
       this.marked.classList.remove("is-marked");
       element.classList.add("is-marked");
       this.marked = element;
@@ -91,13 +137,15 @@ class handleInteractions {
   }
 
   zoomImage(obj) {
-    imageZoom.querySelector("img").src = obj.src;
+    let img = obj.querySelector("img");
+    imageZoom.querySelector("img").src = img.src;
+    imageZoom.querySelector("img").setAttribute("data-rotation", img.dataset.rotation);
     imageZoom.classList.toggle("is-active");
-    imageZoom.querySelector("figcaption").innerText = obj.alt;
+    imageZoom.querySelector("figcaption").innerText = img.alt;
   }
 
-  setKeyboardEvents() { 
-    document.addEventListener('keydown', e => { 
+  setKeyboardEvents() {
+    document.addEventListener('keydown', e => {
       if (!this.marked) {
         return false;
       }
@@ -107,18 +155,22 @@ class handleInteractions {
           this.states.toogleState(this.marked, "is-fav");
           this.options.toggleOption("is-fav");
           break;
-  
+
         case "Space":
           this.zoomImage(this.marked);
           this.options.toggleOption("is-large");
           break;
-  
+
         case "KeyD":
           this.marked.classList.toggle("is-bad");
           this.states.toogleState(this.marked, "is-bad");
           this.options.toggleOption("is-bad");
           break;
-  
+
+        case "KeyR":
+          this.setRotation();
+          break;
+
         case "KeyF":
           if (this.marked.requestFullscreen) {
             this.marked.requestFullscreen();
@@ -134,9 +186,9 @@ class handleInteractions {
 /* Image Options
 ---------------------------------------------------------------------------- */
 
-class imageOptions { 
+class imageOptions {
 
-  constructor(states) { 
+  constructor(states) {
     this.target = imageMenue;
     this.states = states;
     this.menuOptions = menuOptions;
@@ -148,27 +200,27 @@ class imageOptions {
     });
   }
 
-  assignOptions(key) { 
+  assignOptions(key) {
     let activeStates = this.states.getStates(key);
     this.resetOptions();
-    if (activeStates) { 
-      activeStates.forEach(state => { 
+    if (activeStates) {
+      activeStates.forEach(state => {
         this.toggleOption(state);
       });
     }
   }
 
-  showMenue(element) { 
+  showMenue(element) {
     this.target.classList.add("is-active");
     let key = element.id;
     this.assignOptions(key);
   }
 
-  hideMenue() { 
+  hideMenue() {
     this.target.classList.remove("is-active");
   }
 
-  toggleOption(option) { 
+  toggleOption(option) {
     let target = document.getElementById(option);
     target.classList.toggle("is-active");
   }
@@ -178,13 +230,14 @@ class imageOptions {
 /* Store States
 ---------------------------------------------------------------------------- */
 
-class storeHandler{
+class storeHandler {
   constructor(elements) {
-    
-    elements.forEach(element => { 
+
+    elements.forEach(element => {
+      element = element.parentNode;
       let states = this.getStates(element.id);
       let target = document.getElementById(element.id);
-      if (states) { 
+      if (states) {
         states.forEach(state => {
           this.setState(target, state);
         });
@@ -192,19 +245,19 @@ class storeHandler{
     });
   }
 
-  getStates(key) { 
+  getStates(key) {
     return JSON.parse(localStorage.getItem(key));
   }
 
-  setState(element, state) { 
+  setState(element, state) {
     element.classList.add(state);
   }
 
-  storeStates(key, states) { 
+  storeStates(key, states) {
     return localStorage.setItem(key, JSON.stringify(states));
   }
 
-  toogleState(element, newState) { 
+  toogleState(element, newState) {
     if (this.storageAvailable('localStorage')) {
       let id = element.id;
       let states = this.getStates(id);
@@ -212,39 +265,73 @@ class storeHandler{
       if (states.includes(newState)) {
         let index = states.indexOf(newState)
         if (index > -1) { states.splice(index, 1) }
-      } else { 
+      } else {
         states.push(newState);
       }
       this.storeStates(id, states);
     }
   }
-  
+
   storageAvailable(type) {
     var storage;
     try {
-        storage = window[type];
-        var x = '__storage_test__';
-        storage.setItem(x, x);
-        storage.removeItem(x);
-        return true;
+      storage = window[type];
+      var x = '__storage_test__';
+      storage.setItem(x, x);
+      storage.removeItem(x);
+      return true;
     }
-    catch(e) {
-        return e instanceof DOMException && (
-            // everything except Firefox
-            e.code === 22 ||
-            // Firefox
-            e.code === 1014 ||
-            // test name field too, because code might not be present
-            // everything except Firefox
-            e.name === 'QuotaExceededError' ||
-            // Firefox
-            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-            // acknowledge QuotaExceededError only if there's something already stored
-            (storage && storage.length !== 0);
+    catch (e) {
+      return e instanceof DOMException && (
+        // everything except Firefox
+        e.code === 22 ||
+        // Firefox
+        e.code === 1014 ||
+        // test name field too, because code might not be present
+        // everything except Firefox
+        e.name === 'QuotaExceededError' ||
+        // Firefox
+        e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+        // acknowledge QuotaExceededError only if there's something already stored
+        (storage && storage.length !== 0);
     }
   }
 
 }
+
+
+/* Image Canvas
+---------------------------------------------------------------------------- */
+
+class imageCanvas {
+
+  constructor(holderItems) {
+    this.replaceImages(holderItems);
+
+  }
+
+  replaceImages(items) {
+    items.forEach(item => {
+      let idParent = "holder-" + item.id;
+      item.parentNode.id = idParent;
+      this.createCanvas(idParent);
+    });
+  }
+
+  createCanvas(id) {
+    id.setup = function () {
+      id.createCanvas(400, 400);
+    }
+
+    holderItems.forEach(item => {
+      new p5(this.createCanvas, item)
+    });
+
+  }
+
+}
+
+
 
 
 /*##########################################################################
@@ -263,8 +350,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
   const options = new imageOptions(states);
 
 
+  /* Image Canvas
+  -------------------------------------------------------------------------- */
+  // const canvas = new imageCanvas(imageZoom);
+
+
   /* Interactions
-  -------------------------------------------------------------------------- */  
+  -------------------------------------------------------------------------- */
   const interactions = new handleInteractions(holderItems, options, states);
 
 });

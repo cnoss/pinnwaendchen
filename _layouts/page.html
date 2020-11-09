@@ -8,10 +8,11 @@ layout: default
 
 <aside id="image-menue">
   <ul class="image-options">
-    <li id="is-fav" class="image-options__item"><i class="icon icon--xl">favorite</i></li>
-    <li id="is-bad" class="image-options__item"><i class="icon icon--xl">fullscreen_exit</i></li>
-    <li id="is-large" class="image-options__item"><i class="icon icon--xl">fullscreen</i></li>
-    <li id="open" class="image-options__item"><i class="icon icon--xl">open_in_new</i></li>
+    <li id="rotate" class="image-options__item"><i class="icon icon--l">rotate_right</i></li>
+    <li id="is-fav" class="image-options__item"><i class="icon icon--l">favorite</i></li>
+    <li id="is-bad" class="image-options__item"><i class="icon icon--l">fullscreen_exit</i></li>
+    <li id="is-large" class="image-options__item"><i class="icon icon--l">fullscreen</i></li>
+    <li id="open" class="image-options__item"><i class="icon icon--l">open_in_new</i></li>
   </ul>
 </aside>
 
@@ -34,3 +35,6 @@ layout: default
 <h2>Icons</h2>
 {% include image-grid.html folder=page.folder slug="icons" %}
 </section>
+
+<script src="{{ site.basisurl | append: '/assets/js/page.js' | relative_url }}"></script>
+<script src="{{ site.basisurl | append: '/assets/libs/p5.min.js' | relative_url }}"></script>

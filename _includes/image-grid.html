@@ -8,8 +8,8 @@
         {% if image.path contains slug %}
           <li class="image-overview__item">
           {% assign alt = image.name %}
-            <figure class="image-holder">
-              <img id="{{ image.path | slugify }}" loading=lazy class="image-holder__item" src="{{site.baseurl}}/{{ image.path }}" alt="{{ alt }}">
+            <figure id="holder-{{ image.path | slugify }}" class="image-holder">
+              <img id="{{ image.path | slugify }}" loading=lazy class="image-holder__item" src="{{site.baseurl}}/{{ image.path }}" alt="{{ alt }}" data-rotation="0">
             </figure>
           </li>
         {% endif %}
